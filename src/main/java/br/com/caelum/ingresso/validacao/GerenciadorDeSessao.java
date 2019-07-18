@@ -36,6 +36,35 @@ public class GerenciadorDeSessao {
 		return false;
 	}
 	
+	private boolean horarioIsConflitante(Sessao sessaoExistente, Sessao sessaoNova) {
+		
+		LocalDateTime inicioSessaoExistente = getInicioSessaoComDiaDeHoje(sessaoExistente);
+		LocalDateTime terminoSessaoExistente = getTerminoSessaoComDiaDeHoje(sessaoExistente);
+		LocalDateTime inicioSessaoNova = getInicioSessaoComDiaDeHoje(sessaoNova);
+		LocalDateTime terminoSessaoNova = getTerminoSessaoComDiaDeHoje(sessaoNova);
+		
+		boolean sessaoNovaTerminaAntesDaExistente = terminoSessaoNova.isBefore(inicioSessaoExistente);
+		boolean sessaoNovaComecaDepoisDaExistente = terminoSessaoExistente.isBefore(inicioSessaoNova);
+		
+		if(sessaoNovaTerminaAntesDaExistente || sessaoNovaComecaDepoisDaExistente) {
+			return false;
+		}
+		
+		return true;
+		
+	}
+	
+	private LocalDateTime getInicioSessaoComDiaDeHoje(Sessao sessao) {
+		
+		LocalDate hoje = LocalDate.now();
+		return sessao.getHorario().atDate(hoje);
+	}
+	
+	private LocalDateTime getTerminoSessaoComDiaDeHoje(Sessao sessao) {
+		LocalDateTime inicioSessaoNova =getInicioSessaoComDiaDeHoje(sessao);
+		
+		return inicioSessaoNova.plus(sessao.getFilme().getDuracao());
+	}
 	
 
 }
